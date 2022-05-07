@@ -31,6 +31,14 @@ public class Figure
         this.dy += y;
     }
 
+    public void toGround()
+    {
+        while(!onGround())
+        {
+            changePos(0,1);
+        }
+    }
+
     public boolean onGround()
     {
         Tile[][] map = Game.map;

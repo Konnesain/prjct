@@ -98,6 +98,14 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         {
             changeX += distanceX;
             changeY += distanceY;
+            fuckingLog("" + distanceY);
+            if(distanceY <= displaySize.x * 60 / -1080f)
+            {
+                Game.cFigure.toGround();
+                changeY = 0;
+                changeX = 0;
+                return true;
+            }
             if (changeX >= 100)
             {
                 Game.cFigure.changePos(-1, 0);
