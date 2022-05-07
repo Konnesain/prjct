@@ -24,20 +24,22 @@ public class Game extends Thread
     boolean wait = false;
     double speed = 1;
     public static boolean theend = false;
+    int score = 0;
 
     TimerTask task = new TimerTask()
     {
         @Override
         public void run()
         {
-            if(theend)
-            {
-                this.cancel();
-            }
             if (cFigure != null)
                 cFigure.changePos(0,1);
             if (cFigure.onGround())
             {
+                if(theend)
+                {
+                    this.cancel();
+                    return;
+                }
                 cFigure.isFalling = false;
                 for (Tile tile : cFigure.tiles)
                 {
@@ -63,8 +65,9 @@ public class Game extends Thread
                     break;
                 }
             }
-            if(is)
+            if(is) //maybe if need to delete line
             {
+                score += 100;
                 for(int ii = i; ii > 0; ii--)
                 {
                     for(int gg = 0; gg < 10; gg++)
@@ -84,7 +87,7 @@ public class Game extends Thread
 
     public Game(SurfaceHolder hldr, int width, int height)
     {
-        this.tileSize = width * 80 / 1080;
+        this.tileSize = width * 60 / 1080;//def size - 80; now - 60
         this.margin = width * 40 / 1080;
 
         this.holder = hldr;
@@ -141,6 +144,10 @@ public class Game extends Thread
                     canvas.drawRect(margin + (tile.x + cFigure.dx) * tileSize, margin + (tile.y +cFigure.dy) * tileSize,
                             margin + (tile.x + cFigure.dx + 1) * tileSize, margin + (tile.y + cFigure.dy + 1) * tileSize, paint);
                 }
+                Paint paint = new Paint();
+                paint.setColor(Color.RED);
+                paint.setTextSize(25);
+                canvas.drawText("score: " + score, margin + map[9][19].x * tileSize + tileSize + 100, margin * 3, paint); //draw text
             }
             finally
             {
@@ -153,9 +160,10 @@ public class Game extends Thread
     public void run()
     {
         super.run();
+        cFigure = new Figure(Figure.Type.I);
         while (isRunning)
         {
-            if (cFigure == null || !cFigure.isFalling) //check figure
+            if (!cFigure.isFalling) //check figure
             {
                 Figure.Type t = null;
                 switch (r.nextInt(7))

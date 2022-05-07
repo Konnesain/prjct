@@ -35,14 +35,17 @@ public class Figure
     {
         Tile[][] map = Game.map;
         for (int i = 0; i < 4; i++)
+        {
             if (this.tiles[i].y + this.dy >= 19 || !map[this.tiles[i].x + this.dx][this.tiles[i].y + this.dy + 1].isEmpty)
             {
-                if(this.tiles[i].y + this.dy == 0)
-                {
-                    Game.theend = true;
-                }
+                for(int g = 0; g < 4; g++)
+                    if(this.tiles[g].y + this.dy == 0)
+                    {
+                        Game.theend = true;
+                    }
                 return true;
             }
+        }
         return false;
     }
 
