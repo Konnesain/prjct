@@ -19,7 +19,8 @@ public class Game extends Thread
     public static Figure cFigure;
     private final int tileSize;
     private final int margin;
-    Random r;
+    private final double scale = 0x1;//idk
+    final Random r;
     Timer timer;
     boolean wait = false;
     double speed = 1;
@@ -31,8 +32,9 @@ public class Game extends Thread
         @Override
         public void run()
         {
-            if (cFigure != null)
-                cFigure.changePos(0,1);
+            if (cFigure == null)
+                return;
+            cFigure.changePos(0,1);
             if (cFigure.onGround())
             {
                 if(theend)
@@ -87,6 +89,8 @@ public class Game extends Thread
 
     public Game(SurfaceHolder hldr, int width, int height)
     {
+        //this.tileSize = 60 * scale;
+        //this.margin = 40 * scale;
         this.tileSize = width * 60 / 1080;//def size - 80; now - 60
         this.margin = width * 40 / 1080;
 

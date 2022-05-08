@@ -35,7 +35,7 @@ public class Figure
     {
         while(!onGround())
         {
-            changePos(0,1);
+            this.dy++;
         }
     }
 
@@ -99,52 +99,52 @@ public class Figure
         {
             case L:
                 color = Color.RED;
-                tiles[0] = new Tile(0, 0, color);
-                tiles[1] = new Tile(0, 1, color);
-                tiles[2] = new Tile(0, 2, color);
-                tiles[3] = new Tile(1, 2, color);
+                this.tiles[0] = new Tile(0, 0, color);
+                this.tiles[1] = new Tile(0, 1, color);
+                this.tiles[2] = new Tile(0, 2, color);
+                this.tiles[3] = new Tile(1, 2, color);
                 break;
             case J:
                 color = Color.BLUE;
-                tiles[0] = new Tile(1, 0, color);
-                tiles[1] = new Tile(1, 1, color);
-                tiles[2] = new Tile(1, 2, color);
-                tiles[3] = new Tile(0, 2, color);
+                this.tiles[0] = new Tile(1, 0, color);
+                this.tiles[1] = new Tile(1, 1, color);
+                this.tiles[2] = new Tile(1, 2, color);
+                this.tiles[3] = new Tile(0, 2, color);
                 break;
             case I:
                 color = Color.GREEN;
-                tiles[0] = new Tile(0, 0, color);
-                tiles[1] = new Tile(1, 0, color);
-                tiles[2] = new Tile(2, 0, color);
-                tiles[3] = new Tile(3, 0, color);
+                this.tiles[0] = new Tile(0, 0, color);
+                this.tiles[1] = new Tile(1, 0, color);
+                this.tiles[2] = new Tile(2, 0, color);
+                this.tiles[3] = new Tile(3, 0, color);
                 break;
             case T:
                 color = Color.YELLOW;
-                tiles[0] = new Tile(0, 0, color);
-                tiles[1] = new Tile(1, 0, color);
-                tiles[2] = new Tile(2, 0, color);
-                tiles[3] = new Tile(1, 1, color);
+                this.tiles[0] = new Tile(0, 0, color);
+                this.tiles[1] = new Tile(1, 0, color);
+                this.tiles[2] = new Tile(2, 0, color);
+                this.tiles[3] = new Tile(1, 1, color);
                 break;
             case Z:
                 color = Color.MAGENTA;
-                tiles[0] = new Tile(0, 0, color);
-                tiles[1] = new Tile(1, 0, color);
-                tiles[2] = new Tile(1, 1, color);
-                tiles[3] = new Tile(2, 1, color);
+                this.tiles[0] = new Tile(0, 0, color);
+                this.tiles[1] = new Tile(1, 0, color);
+                this.tiles[2] = new Tile(1, 1, color);
+                this.tiles[3] = new Tile(2, 1, color);
                 break;
             case S:
                 color = Color.CYAN;
-                tiles[0] = new Tile(0, 1, color);
-                tiles[1] = new Tile(1, 1, color);
-                tiles[2] = new Tile(1, 0, color);
-                tiles[3] = new Tile(2, 0, color);
+                this.tiles[0] = new Tile(0, 1, color);
+                this.tiles[1] = new Tile(1, 1, color);
+                this.tiles[2] = new Tile(1, 0, color);
+                this.tiles[3] = new Tile(2, 0, color);
                 break;
             case O:
                 color = Color.LTGRAY;
-                tiles[0] = new Tile(0, 0, color);
-                tiles[1] = new Tile(1, 0, color);
-                tiles[2] = new Tile(0, 1, color);
-                tiles[3] = new Tile(1, 1, color);
+                this.tiles[0] = new Tile(0, 0, color);
+                this.tiles[1] = new Tile(1, 0, color);
+                this.tiles[2] = new Tile(0, 1, color);
+                this.tiles[3] = new Tile(1, 1, color);
                 break;
         }
     }

@@ -89,7 +89,6 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         public boolean onSingleTapUp(MotionEvent event)
         {
             dt.rotate(event.getX() < displaySize.x / 2f);
-            event.setSource(56149);
             return true;
         }
 
