@@ -10,13 +10,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import static com.test.my.tetris.MainActivity.fuckingLog;
-
 import androidx.annotation.NonNull;
 
 public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener
 {
-    Game dt;
+    Game game;
     Point displaySize;
     private final GestureDetector gestureDetector;
 
@@ -34,9 +32,8 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
     {
         displaySize = new Point();
         getDisplay().getSize(displaySize);
-        Log.e("TAG", "x: " + displaySize.x + "; y: " + displaySize.y);
-        dt = new Game(surfaceHolder, displaySize.x, displaySize.y);
-        dt.start();
+        game = new Game(surfaceHolder, displaySize.x, displaySize.y);
+        game.start();
     }
 
     @Override
@@ -47,13 +44,13 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder)
     {
-        dt.isRunning = false;
+        game.isRunning = false;
         boolean retry = true;
         while (retry)
         {
             try
             {
-                dt.join();
+                game.join();
                 retry = false;
             }
             catch (InterruptedException e) {/*do nothing XD*/}
@@ -70,10 +67,6 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
-
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-
         float changeX;
         float changeY;
 
@@ -88,7 +81,7 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         @Override
         public boolean onSingleTapUp(MotionEvent event)
         {
-            dt.rotate(event.getX() < displaySize.x / 2f);
+            game.rotate(event.getX() < displaySize.x / 2f);
             return true;
         }
 
@@ -97,90 +90,29 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         {
             changeX += distanceX;
             changeY += distanceY;
-            fuckingLog("" + distanceY);
             if(distanceY <= displaySize.x * 60 / -1080f)
             {
-                Game.cFigure.toGround();
+                game.toGround();
                 changeY = 0;
                 changeX = 0;
                 return true;
             }
             if (changeX >= 100)
             {
-                Game.cFigure.changePos(-1, 0);
+                game.changePos(-1, 0);
                 changeX = 0;
             }
             if (changeX <= -100)
             {
-                Game.cFigure.changePos(1, 0);
+                game.changePos(1, 0);
                 changeX = 0;
             }
             if (changeY < -70)
             {
-                Game.cFigure.changePos(0, 1);
+                game.changePos(0, 1);
                 changeY = 0;
             }
             return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
-        {
-            boolean result = false;
-            try
-            {
-                float diffY = e2.getY() - e1.getY();
-                float diffX = e2.getX() - e1.getX();
-                if (Math.abs(diffX) > Math.abs(diffY))
-                {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD)
-                    {
-                        if (diffX > 0)
-                        {
-                            onSwipeRight();
-                        }
-                        else
-                        {
-                            onSwipeLeft();
-                        }
-                        result = true;
-                    }
-                }
-                else
-                    if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD)
-                    {
-                        if (diffY > 0)
-                        {
-                            onSwipeBottom();
-                        }
-                        else
-                        {
-                            onSwipeTop();
-                        }
-                        result = true;
-                    }
-            }
-            catch (Exception exception)
-            {
-                exception.printStackTrace();
-            }
-            return result;
-        }
-
-        private void onSwipeRight()
-        {
-        }
-
-        private void onSwipeLeft()
-        {
-        }
-
-        private void onSwipeTop()
-        {
-        }
-
-        private void onSwipeBottom()
-        {
         }
     }
 }

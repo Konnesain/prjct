@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.util.Random;
@@ -15,29 +16,29 @@ public class Game extends Thread
 {
     SurfaceHolder holder;
     public volatile boolean isRunning = true;
-    public static Tile[][] map = new Tile[10][20];
-    public static Figure cFigure;
+    public Tile[][] map = new Tile[10][20];
+    public Figure cFigure;
     private final int tileSize;
     private final int margin;
-    private final double scale = 0x1;//idk
+    private final int textSize;
     final Random r;
     Timer timer;
-    boolean wait = false;
-    double speed = 1;
+    private boolean wait = false;
+    private double speed = 1;
     public static boolean theend = false;
-    int score = 0;
+    private int score = 0;
 
-    TimerTask task = new TimerTask()
+    private class myTimerTask extends TimerTask
     {
         @Override
         public void run()
         {
             if (cFigure == null)
                 return;
-            cFigure.changePos(0,1);
-            if (cFigure.onGround())
+            cFigure.changePos(0,1, map);
+            if (cFigure.onGround(map))
             {
-                if(theend)
+                if (theend)
                 {
                     this.cancel();
                     return;
@@ -51,7 +52,7 @@ public class Game extends Thread
                 deleteLines();
             }
         }
-    };
+    }
 
     public void deleteLines()
     {
@@ -89,26 +90,28 @@ public class Game extends Thread
 
     public Game(SurfaceHolder hldr, int width, int height)
     {
-        //this.tileSize = 60 * scale;
-        //this.margin = 40 * scale;
-        this.tileSize = width * 60 / 1080;//def size - 80; now - 60
+        this.textSize = width * 30 / 1080;
+        this.tileSize = width * 60 / 1080;
         this.margin = width * 40 / 1080;
-
         this.holder = hldr;
         for (int i = 0; i < 10; i++)
             for (int g = 0; g < 20; g++)
                 map[i][g] = new Tile(i, g, Color.WHITE);
         r = new Random();
         timer = new Timer();
-        timer.schedule(task, 1000, Math.round(500 / speed));
+        timer.schedule(new myTimerTask(), 1000, Math.round(500 / speed));
     }
 
-    private void changeSpeed(double speed)
+    private void restartTimer(double speed)
     {
-        long spd = Math.round(500 / speed);
         timer.cancel();
-        timer.schedule(task, 0, spd);
+        timer.purge();
+        timer = new Timer();
+        timer.schedule(new myTimerTask(), 50, Math.round(500 / speed));
     }
+
+    public void changePos(int x, int y) { cFigure.changePos(x,y, map); }
+    public void toGround() { cFigure.toGround(map); restartTimer(speed); } //is it better than static?
 
     public void rotate(boolean right) //rotate figure
     {
@@ -125,10 +128,10 @@ public class Game extends Thread
             try
             {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //clear canvas
+                Paint paint = new Paint();
                 for (int i = 0; i < 10; i++) //draw map
                     for (int g = 0; g < 20; g++)
                     {
-                        Paint paint = new Paint();
                         paint.setColor(map[i][g].color);
                         if (map[i][g].isEmpty)
                         {
@@ -139,24 +142,33 @@ public class Game extends Thread
                         canvas.drawRect(new Rect(margin + map[i][g].x * tileSize, margin + map[i][g].y * tileSize,
                                 margin + map[i][g].x * tileSize + tileSize, margin + map[i][g].y * tileSize + tileSize), paint);
                     }
-                for (int i = 0; i < 4; i++) //draw figure
-                {
-                    Tile tile = cFigure.tiles[i];
-                    Paint paint = new Paint();
-                    paint.setColor(tile.color);
-                    paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                    canvas.drawRect(margin + (tile.x + cFigure.dx) * tileSize, margin + (tile.y +cFigure.dy) * tileSize,
-                            margin + (tile.x + cFigure.dx + 1) * tileSize, margin + (tile.y + cFigure.dy + 1) * tileSize, paint);
-                }
-                Paint paint = new Paint();
+                paint.setColor(cFigure.tiles[0].color);
+                paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                drawFigure(canvas, cFigure, paint);
+                Figure pseudoFigure = new Figure(cFigure);
+                paint.setAlpha(128); //50% transparent
+                while(!pseudoFigure.onGround(map))
+                    pseudoFigure.dy++;
+                drawFigure(canvas, pseudoFigure, paint);
+                paint = new Paint();
                 paint.setColor(Color.RED);
-                paint.setTextSize(25);
+                paint.setTextSize(textSize);
                 canvas.drawText("score: " + score, margin + map[9][19].x * tileSize + tileSize + 100, margin * 3, paint); //draw text
             }
             finally
             {
                 holder.unlockCanvasAndPost(canvas);
             }
+        }
+    }
+
+    private void drawFigure(Canvas canvas, Figure figure, Paint paint)
+    {
+        for (int i = 0; i < 4; i++) //draw figure
+        {
+            Tile tile = figure.tiles[i];
+            canvas.drawRect(margin + (tile.x + figure.dx) * tileSize, margin + (tile.y + figure.dy) * tileSize,
+                    margin + (tile.x + figure.dx + 1) * tileSize, margin + (tile.y + figure.dy + 1) * tileSize, paint);
         }
     }
 

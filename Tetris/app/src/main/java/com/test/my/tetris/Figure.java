@@ -9,18 +9,17 @@ public class Figure
     public boolean isFalling;
     public Type type;
 
-    public void changePos(int x, int y)
+    public void changePos(int x, int y, Tile[][] map)
     {
         if(y != 0)
         {
-            if (onGround())
+            if (onGround(map))
                 return;
         }
         else
         {
             for(int i = 0; i < 4; i++)
             {
-                Tile[][] map = Game.map;
                 if(this.tiles[i].x + this.dx + x > 9 || this.tiles[i].x + this.dx + x < 0 || !map[this.tiles[i].x + this.dx + x][this.tiles[i].y + this.dy].isEmpty)
                 {
                     return;
@@ -31,17 +30,16 @@ public class Figure
         this.dy += y;
     }
 
-    public void toGround()
+    public void toGround(Tile[][] map)
     {
-        while(!onGround())
+        while(!onGround(map))
         {
             this.dy++;
         }
     }
 
-    public boolean onGround()
+    public boolean onGround(Tile[][] map)
     {
-        Tile[][] map = Game.map;
         for (int i = 0; i < 4; i++)
         {
             if (this.tiles[i].y + this.dy >= 19 || !map[this.tiles[i].x + this.dx][this.tiles[i].y + this.dy + 1].isEmpty)
@@ -147,6 +145,13 @@ public class Figure
                 this.tiles[3] = new Tile(1, 1, color);
                 break;
         }
+    }
+
+    public Figure(Figure figure)
+    {
+        this.dx = figure.dx;
+        this.dy = figure.dy;
+        this.tiles = figure.tiles;
     }
 
     public enum Type
