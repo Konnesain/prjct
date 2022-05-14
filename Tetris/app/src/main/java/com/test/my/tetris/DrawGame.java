@@ -2,8 +2,7 @@ package com.test.my.tetris;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Point;
-import android.util.Log;
+import android.content.res.Resources;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -15,13 +14,14 @@ import androidx.annotation.NonNull;
 public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener
 {
     Game game;
-    Point displaySize;
     private final GestureDetector gestureDetector;
+    private final Resources res;
 
     @SuppressLint("ClickableViewAccessibility")
     public DrawGame(Context context)
     {
         super(context);
+        this.res = getResources();
         getHolder().addCallback(this);
         gestureDetector = new GestureDetector(context, new GestureListener());
         this.setOnTouchListener(this);
@@ -30,9 +30,7 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder)
     {
-        displaySize = new Point();
-        getDisplay().getSize(displaySize);
-        game = new Game(surfaceHolder, displaySize.x, displaySize.y);
+        game = new Game(surfaceHolder, res);
         game.start();
     }
 
@@ -81,7 +79,7 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         @Override
         public boolean onSingleTapUp(MotionEvent event)
         {
-            game.rotate(event.getX() < displaySize.x / 2f);
+            game.rotate(event.getX() < res.getDisplayMetrics().widthPixels / 2f);
             return true;
         }
 
@@ -90,24 +88,24 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
         {
             changeX += distanceX;
             changeY += distanceY;
-            if(distanceY <= displaySize.x * 60 / -1080f)
+            if(distanceY <= -res.getDimension(R.dimen.dropY))
             {
                 game.toGround();
                 changeY = 0;
                 changeX = 0;
                 return true;
             }
-            if (changeX >= 100)
+            if (changeX >= res.getDimension(R.dimen.moveX))
             {
                 game.changePos(-1, 0);
                 changeX = 0;
             }
-            if (changeX <= -100)
+            if (changeX <= -res.getDimension(R.dimen.moveX))
             {
                 game.changePos(1, 0);
                 changeX = 0;
             }
-            if (changeY < -70)
+            if (changeY < -res.getDimension(R.dimen.moveY))
             {
                 game.changePos(0, 1);
                 changeY = 0;

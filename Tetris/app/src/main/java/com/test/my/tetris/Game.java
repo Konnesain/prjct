@@ -1,12 +1,16 @@
 package com.test.my.tetris;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
 
 import java.util.Random;
 import java.util.Timer;
@@ -18,6 +22,7 @@ public class Game extends Thread
     public volatile boolean isRunning = true;
     public Tile[][] map = new Tile[10][20];
     public Figure cFigure;
+    private Figure nextFigure;
     private final int tileSize;
     private final int margin;
     private final int textSize;
@@ -28,7 +33,7 @@ public class Game extends Thread
     public static boolean theend = false;
     private int score = 0;
 
-    private class myTimerTask extends TimerTask
+    private class myTimerTask extends TimerTask //task for timer
     {
         @Override
         public void run()
@@ -88,11 +93,12 @@ public class Game extends Thread
         wait = false;
     }
 
-    public Game(SurfaceHolder hldr, int width, int height)
+    public Game(SurfaceHolder hldr, Resources res)
     {
-        this.textSize = width * 30 / 1080;
-        this.tileSize = width * 60 / 1080;
-        this.margin = width * 40 / 1080;
+        this.textSize = (int) res.getDimension(R.dimen.textSize);
+        this.tileSize = (int) res.getDimension(R.dimen.tileSize);
+        this.margin = (int) res.getDimension(R.dimen.margin);
+
         this.holder = hldr;
         for (int i = 0; i < 10; i++)
             for (int g = 0; g < 20; g++)
@@ -139,8 +145,8 @@ public class Game extends Thread
                         }
                         else
                             paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                        canvas.drawRect(new Rect(margin + map[i][g].x * tileSize, margin + map[i][g].y * tileSize,
-                                margin + map[i][g].x * tileSize + tileSize, margin + map[i][g].y * tileSize + tileSize), paint);
+                        canvas.drawRect(margin + map[i][g].x * tileSize, margin + map[i][g].y * tileSize,
+                                margin + map[i][g].x * tileSize + tileSize, margin + map[i][g].y * tileSize + tileSize, paint);
                     }
                 paint.setColor(cFigure.tiles[0].color);
                 paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -150,6 +156,26 @@ public class Game extends Thread
                 while(!pseudoFigure.onGround(map))
                     pseudoFigure.dy++;
                 drawFigure(canvas, pseudoFigure, paint);
+
+                paint = new Paint();
+                paint.setColor(Color.WHITE);
+                paint.setStyle(Paint.Style.STROKE);
+                for(int i = 0; i < 4; i++)
+                    for(int g = 0; g < 4; g++)
+                    {
+                        canvas.drawRect(margin + map[9][19].x * tileSize + tileSize + 100 + (i * tileSize), margin * 5 + (g * tileSize), //какой же это ужас
+                                margin + map[9][19].x * tileSize + tileSize + 100 + tileSize + (i * tileSize), margin * 5 + tileSize + (g * tileSize), paint);
+                    }
+
+                paint.setColor(nextFigure.tiles[0].color);
+                paint.setStyle(Paint.Style.FILL_AND_STROKE);
+                for (int i = 0; i < 4; i++) //draw next figure
+                {
+                    Tile tile = nextFigure.tiles[i];
+                    canvas.drawRect(margin + map[9][19].x * tileSize + tileSize + 100 + (tile.x * tileSize), margin * 5 + (tile.y * tileSize),
+                            margin + map[9][19].x * tileSize + tileSize + 100 + tileSize + (tile.x * tileSize), margin * 5 + tileSize + (tile.y * tileSize), paint);
+                }
+
                 paint = new Paint();
                 paint.setColor(Color.RED);
                 paint.setTextSize(textSize);
@@ -177,40 +203,47 @@ public class Game extends Thread
     {
         super.run();
         cFigure = new Figure(Figure.Type.I);
+        nextFigure = getRandomFigure();
         while (isRunning)
         {
             if (!cFigure.isFalling) //check figure
             {
-                Figure.Type t = null;
-                switch (r.nextInt(7))
-                {
-                    case 0:
-                        t = Figure.Type.L;
-                        break;
-                    case 1:
-                        t = Figure.Type.J;
-                        break;
-                    case 2:
-                        t = Figure.Type.I;
-                        break;
-                    case 3:
-                        t = Figure.Type.T;
-                        break;
-                    case 4:
-                        t = Figure.Type.Z;
-                        break;
-                    case 5:
-                        t = Figure.Type.S;
-                        break;
-                    case 6:
-                        t = Figure.Type.O;
-                        break;
-                }
-                cFigure = new Figure(t);
+                cFigure = nextFigure;
+                nextFigure = getRandomFigure();
             }
             if (!wait)
                 draw();
         }
         timer.cancel();
+    }
+
+    private Figure getRandomFigure()
+    {
+        Figure.Type type = null;
+        switch (r.nextInt(7))
+        {
+            case 0:
+                type = Figure.Type.L;
+                break;
+            case 1:
+                type = Figure.Type.J;
+                break;
+            case 2:
+                type = Figure.Type.I;
+                break;
+            case 3:
+                type = Figure.Type.T;
+                break;
+            case 4:
+                type = Figure.Type.Z;
+                break;
+            case 5:
+                type = Figure.Type.S;
+                break;
+            case 6:
+                type = Figure.Type.O;
+                break;
+        }
+        return new Figure(type);
     }
 }
