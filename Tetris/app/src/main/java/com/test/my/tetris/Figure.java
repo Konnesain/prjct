@@ -13,7 +13,7 @@ public class Figure
     {
         if(y != 0)
         {
-            if (onGround(map))
+            if (onGround(map) != 0)
                 return;
         }
         else
@@ -32,13 +32,13 @@ public class Figure
 
     public void toGround(Tile[][] map)
     {
-        while(!onGround(map))
+        while(onGround(map) == 0)
         {
             this.dy++;
         }
     }
 
-    public boolean onGround(Tile[][] map)
+    public int onGround(Tile[][] map)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -47,12 +47,12 @@ public class Figure
                 for(int g = 0; g < 4; g++)
                     if(this.tiles[g].y + this.dy == 0)
                     {
-                        Game.theend = true;
+                        return 2; //true
                     }
-                return true;
+                return 1; //true
             }
         }
-        return false;
+        return 0; //false
     }
 
     public void rotate(boolean right)

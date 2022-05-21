@@ -1,8 +1,10 @@
 package com.test.my.tetris;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -16,21 +18,27 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
     Game game;
     private final GestureDetector gestureDetector;
     private final Resources res;
+    Activity activity;
 
     @SuppressLint("ClickableViewAccessibility")
-    public DrawGame(Context context)
+    public DrawGame(Activity activity)
     {
-        super(context);
+        super(activity);
+        this.activity = activity;
         this.res = getResources();
         getHolder().addCallback(this);
-        gestureDetector = new GestureDetector(context, new GestureListener());
+        gestureDetector = new GestureDetector(activity, new GestureListener());
         this.setOnTouchListener(this);
     }
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder)
     {
-        game = new Game(surfaceHolder, res);
+        if(game == null)
+            game = new Game(surfaceHolder, res, activity);
+        else
+            game = new Game(game);
+        game.isRunning = true;
         game.start();
     }
 
@@ -58,7 +66,7 @@ public class DrawGame extends SurfaceView implements SurfaceHolder.Callback, Vie
     @Override
     public boolean onTouch(View view, MotionEvent event)
     {
-        if(Game.theend)
+        if(game.theend)
             return false;
         return gestureDetector.onTouchEvent(event);
     }
