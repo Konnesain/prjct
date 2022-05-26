@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="margin">20dp</dimen>
-    <dimen name="textSize">16sp</dimen>
-    <dimen name="tileSize">20dp</dimen>
-    <dimen name="moveX">50dp</dimen>
-    <dimen name="moveY">40dp</dimen>
-    <dimen name="dropY">30dp</dimen>
-</resources>
